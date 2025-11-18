@@ -8,7 +8,7 @@ export function convertMedecinToDoctor(medecin: Medecin): Doctor {
     first_name:medecin.prenom,
     last_name:medecin.nom,
     email:medecin.email,
-    specialite:medecin.specialite,
+    specialite:medecin.specialitecomplementaire,
     adresse:medecin.adresse
   };
 }

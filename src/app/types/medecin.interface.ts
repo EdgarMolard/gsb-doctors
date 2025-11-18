@@ -3,6 +3,6 @@ export interface Medecin {
     nom: string;
     prenom: string;
     email: string;
-    specialite: string;
+    specialitecomplementaire: string;
     adresse: string;
   }
