@@ -1,5 +1,11 @@
+<section class="search-bar">
+
+<input id="searchbar_id" type="text" placeholder="search doctors" [(ngModel)]="searchValue"/>
+
+</section>
+
 <section class="doctors-grid">
-@for(doctor of doctors(); track doctor){
+    @for(doctor of filterDoctors(); track doctor){
     <app-doctor-card [doctor]="doctor"></app-doctor-card>
-}
+    }
 </section>
