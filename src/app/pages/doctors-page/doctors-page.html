@@ -5,7 +5,7 @@
 </section>
 
 <section class="doctors-grid">
-    @for(doctor of filterDoctors(); track doctor){
+    @for(doctor of filterDoctors(); track doctor.id){
     <app-doctor-card [doctor]="doctor"></app-doctor-card>
     }
 </section>

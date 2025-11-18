@@ -25,11 +25,16 @@ export class DoctorsPageComponent {
   });
 
 
+  getDoctorsArray(){
+    return this.doctors();
+  }
+
   filterDoctors(){
-    return this.doctors().filter(doctor =>
+    let doctorsTab = this.getDoctorsArray();
+    return doctorsTab.filter(doctor =>
       doctor.last_name.toLowerCase().includes(this.searchValue.toLowerCase()) ||
       doctor.first_name.toLowerCase().includes(this.searchValue.toLowerCase()) ||
-      doctor.specialite.toLowerCase().includes(this.searchValue.toLowerCase())
+      doctor.specialite?.toLowerCase().includes(this.searchValue.toLowerCase())
 
       );
 
