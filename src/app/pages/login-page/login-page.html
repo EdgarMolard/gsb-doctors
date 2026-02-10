@@ -1,0 +1,63 @@
+<!-- Conteneur principal du formulaire de connexion -->
+<div class="login-container">
+  
+  <!-- Carte de formulaire -->
+  <div class="login-card">
+    
+    <!-- En-tête -->
+    <div class="login-header">
+      <h1>Connexion</h1>
+      <p>Accédez à votre espace médecin</p>
+    </div>
+
+    <!-- Formulaire -->
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      
+      <!-- Champ Login -->
+      <div class="form-group">
+        <label for="email">Login</label>
+        <input 
+          type="text" 
+          id="email" 
+          name="email"
+          [(ngModel)]="email"
+          placeholder="Votre login"
+          required
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <!-- Champ Mot de passe -->
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password"
+          [(ngModel)]="password"
+          placeholder="••••••••"
+          required
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <!-- Message d'erreur -->
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Bouton de soumission -->
+      <button 
+        type="submit" 
+        class="login-button"
+        [disabled]="isLoading || !loginForm.valid"
+      >
+        <span *ngIf="!isLoading">Se connecter</span>
+        <span *ngIf="isLoading">Connexion...</span>
+      </button>
+
+    </form>
+
+  </div>
+  
+</div>
