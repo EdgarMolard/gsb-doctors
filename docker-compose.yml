@@ -1,0 +1,90 @@
+services:
+  # Base de données MariaDB
+  db:
+    image: mariadb:10.11
+    container_name: gsb-database
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-gsb_root_2026}
+      MYSQL_DATABASE: ${DB_NAME:-gsbrapports}
+      MYSQL_USER: ${DB_USER:-gsb_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-gsb_password}
+    volumes:
+      # Persistence des données
+      - db-data:/var/lib/mysql
+      # Initialisation de la base de données
+      - ./gsbrapports.sql:/docker-entrypoint-initdb.d/gsbrapports.sql:ro
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    networks:
+      - gsb-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # API PHP Backend
+  api:
+    build:
+      context: ./restGSB
+      dockerfile: Dockerfile
+    container_name: gsb-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_NAME: ${DB_NAME:-gsbrapports}
+      DB_USER: ${DB_USER:-gsb_user}
+      DB_PASSWORD: ${DB_PASSWORD:-gsb_password}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4200}
+      # Activer les erreurs PHP pour debug (désactiver en production)
+      PHP_DISPLAY_ERRORS: ${PHP_DISPLAY_ERRORS:-1}
+      PHP_ERROR_REPORTING: ${PHP_ERROR_REPORTING:-E_ALL}
+    ports:
+      - "${API_PORT:-3000}:80"
+    networks:
+      - gsb-network
+    volumes:
+      # Mount le code source pour le développement (commenter en production)
+      - ./restGSB:/var/www/html
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Angular
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gsb-frontend
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_URL: ${API_URL:-http://localhost:3000/}
+    ports:
+      - "${FRONTEND_PORT:-4200}:80"
+    networks:
+      - gsb-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  gsb-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
