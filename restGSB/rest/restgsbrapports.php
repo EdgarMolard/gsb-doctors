@@ -25,6 +25,11 @@ class RestGSB extends Rest {
     private $data;
 
     /**
+     * Code HTTP de retour
+     */
+    private $codeRetour;
+
+    /**
      * Constructeur de la classe.
      *
      * Analyse la ressource demandée et détermine le point de terminanison (endpoint)
@@ -48,11 +53,9 @@ class RestGSB extends Rest {
            Ces informations sont stockées dans le tableau $request. */
         $tab = Array();
         $tab = explode('/', $this->request['ressource']);
-  //        error_log(print_r($this->request,true),3,"log.txt");
         /* La première partie correspond au endpoint  */
         if (array_key_exists(0, $tab))
-            $this->request['endpoint'] = array_shift($tab);
-     //       error_log(print_r($this->request['endpoint'],true),3,"log.txt"); 
+            $this->request['endpoint'] = array_shift($tab); 
         
         
         /* La seconde partie, si elle existe et est numérique,
@@ -306,21 +309,18 @@ class RestGSB extends Rest {
     }
     
     private function connexion($args){
-//         error_log(print_r( "passe dans la fonction login",true),3,"log.txt");
         $login = $args['login'];
         $mdp = $args['mdp'];
         $laLigne = $this->pdo->getLeVisiteur($login, $mdp);
-  //       error_log(print_r( $laLigne,true),3,"log.txt");
          if(is_array($laLigne)){
                      $this->data = $this->encoderReponse( $laLigne);
-//                  error_log(print_r( "passe dans le bon test",true),3,"log.txt");
          }
          else{
              $this->data="";
-             $this->codeRetour=400;
+             $this->codeRetour=401;  // Unauthorized - identifiants incorrects
          }
 
-       
+
       
     }
     private function getLesMedecins($args){

@@ -16,7 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error) => {
-      // L'API GSB retourne 500 pour les erreurs d'authentification
+      // L'API GSB retourne 500 pour les erreurs d'authentification ( c'était un bug réglé, maintenant c'est 401 )
       if (error.status === 500 || error.status === 401) {
         console.log('Session expirée - Déconnexion automatique');
         authService.logout();

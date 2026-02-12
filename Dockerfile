@@ -24,10 +24,6 @@ COPY --from=build /app/dist/GSB/browser /usr/share/nginx/html
 # Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy environment configuration script
-COPY env.sh /docker-entrypoint.d/env.sh
-RUN chmod +x /docker-entrypoint.d/env.sh
-
 # Expose port 80
 EXPOSE 80
 

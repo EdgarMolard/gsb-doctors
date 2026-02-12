@@ -66,10 +66,11 @@ DB_USER=gsb_user
 DB_PASSWORD=gsb_password
 DB_ROOT_PASSWORD=gsb_root_2026
 
-# API
-API_URL=http://localhost:3000/
+# CORS
 CORS_ORIGIN=http://localhost:4200
 ```
+
+**Note :** L'URL de l'API est configurée dans [src/environments/environment.ts](src/environments/environment.ts#L31). Modifiez-la directement dans ce fichier si nécessaire.
 
 ## 🐳 Commandes Docker
 

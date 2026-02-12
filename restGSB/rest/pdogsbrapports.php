@@ -72,7 +72,7 @@ class PdoGsbRapports{
                 $stm->bindParam(':mdp', $mdp);
                 $stm->execute();
         	$laLigne = $stm->fetch();
-                if(count($laLigne)>1)
+                if($laLigne !== false && count($laLigne)>1)
                    return $laLigne;
                 else              
                     return NULL;
@@ -188,6 +188,4 @@ class PdoGsbRapports{
         
        
 }   // fin classe
-?>
-
 
