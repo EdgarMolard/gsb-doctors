@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, throwError, of, delay } from 'rxjs';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -35,10 +35,6 @@ export class AuthentificationService {
   
   /** Connexion avec login et mot de passe (API PHP GSB) */
   login(email: string, password: string): Observable<LoginResponse> {
-    if (environment.useMockAuth) {
-      return this.mockLogin(email, password);
-    }
-    
     // Appel GET avec query params pour l'API PHP GSB
     const params = { login: email, mdp: password };
     
@@ -58,39 +54,13 @@ export class AuthentificationService {
           this.updateAuthState(true);
         }),
         catchError((error) => {
-          // L'API PHP retourne 500 quand les identifiants sont incorrects
-          if (error.status === 500) {
+          // L'API PHP retourne 401 quand les identifiants sont incorrects
+          if (error.status === 401) {
             return throwError(() => new Error('Login ou mot de passe incorrect'));
           }
           return this.handleError(error);
         })
       );
-  }
-
-  /** Authentification mock pour le développement (voir environment.ts) */
-  private mockLogin(email: string, password: string): Observable<LoginResponse> {
-    console.log('🔧 Mode MOCK - Login:', environment.testCredentials.email);
-    
-    if (email !== environment.testCredentials.email || 
-        password !== environment.testCredentials.password) {
-      console.log('❌ Identifiants incorrects');
-      return throwError(() => new Error('Login ou mot de passe incorrect')).pipe(delay(800));
-    }
-    
-    console.log('✅ Connexion réussie');
-    
-    const mockResponse: LoginResponse = {
-      token: 'mock-jwt-token-' + Date.now(),
-      user: { email, name: 'Utilisateur Test', role: 'admin' }
-    };
-    
-    return of(mockResponse).pipe(
-      delay(800),
-      tap(response => {
-        this.setSession(response);
-        this.updateAuthState(true);
-      })
-    );
   }
 
   /** Déconnexion et redirection vers /login */

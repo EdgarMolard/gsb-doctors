@@ -7,6 +7,7 @@ Application de gestion des médecins pour GSB (Gestion Service des Bénéfices).
 ### Prérequis
 
 - **Docker** 24+ et **Docker Compose** 2+ ([Installer Docker](https://docs.docker.com/get-docker/))
+- 💻 **Windows** : Assurez-vous que Docker Desktop est lancé pour que le Docker Engine soit actif
 - Ou pour développement local : **Node.js 18+**, **PHP 8.3**, **MySQL/MariaDB**
 
 ### Lancer avec Docker (recommandé)
@@ -128,7 +129,7 @@ docker compose logs -f api
 
 | Problème | Solution |
 |----------|----------|
-| Port déjà utilisé | Modifier `*_PORT` dans `.env` |
+| Port déjà utilisé / Port manquant dans `docker compose ps` | Si un service ne dispose pas de port assigné lors du `docker compose ps`, cela signifie que le port est déjà utilisé par un autre processus. Modifiez `*_PORT` dans `.env` et `apiUrl` dans `src/environments/environment.ts` pour utiliser les nouveaux ports |
 | API ne démarre pas | Attendre que `db` soit healthy: `docker compose ps` |
 | CORS bloqué | Vérifier que `CORS_ORIGIN` correspond au frontend |
 | DB non initialisée | `docker compose down -v` puis redémarrer |
@@ -157,10 +158,6 @@ docker compose logs -f api
 ## 🔐 Authentification
 
 L'API utilise une authentification simple par login/mot de passe (GET). Pour tester, consultez la table `visiteur` dans `gsbrapports.sql`.
-
-Mode mock disponible : définir `useMockAuth: true` dans `src/environments/environment.ts`
-- Email: `test@gsb.fr`
-- Password: `test123`
 
 ## 🚢 Production
 
