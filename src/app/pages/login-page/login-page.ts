@@ -39,7 +39,7 @@ export class LoginPage {
         this.isLoading = false;
         // Attendre un tick pour s'assurer que le token est bien stocké
         setTimeout(() => {
-          this.router.navigate(['/medecins']);
+          this.router.navigate(['/hub']);
         }, 0);
       },
       error: (error) => {

@@ -1,0 +1,32 @@
+<div class="hub-container">
+  <!-- En-tête avec informations utilisateur -->
+  <header class="hub-header">
+    <div class="header-content">
+      <div class="user-info">
+        <h1>Bienvenue, {{ currentUser?.prenom }} {{ currentUser?.nom }}</h1>
+        <p class="subtitle">Sélectionnez une ressource pour continuer</p>
+      </div>
+      <button class="logout-btn" (click)="logout()" title="Déconnexion">
+        <span class="logout-icon">🚪</span>
+        <span class="logout-text">Déconnexion</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Grille de ressources -->
+  <main class="resources-grid">
+    <div 
+      *ngFor="let resource of resources" 
+      class="resource-card"
+      (click)="navigateTo(resource.route)"
+      [style.border-color]="resource.color"
+    >
+      <div class="card-icon" [style.background-color]="resource.color + '20'">
+        <span class="icon">{{ resource.icon }}</span>
+      </div>
+      <h2 class="card-title">{{ resource.title }}</h2>
+      <p class="card-description">{{ resource.description }}</p>
+      <div class="card-arrow" [style.color]="resource.color">→</div>
+    </div>
+  </main>
+</div>
