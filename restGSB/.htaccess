@@ -1,8 +1,13 @@
-
+# Configuration pour l'API REST GSB
 
 RewriteEngine On
 
+# Force Apache à transmettre l'en-tête Authorization à PHP
+# Ceci est ESSENTIEL pour l'authentification JWT
+RewriteCond %{HTTP:Authorization} ^(.+)$
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+# Routage: redirige toutes les requêtes vers wsGSB.php
 #RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ wsGSB.php?ressource=$1 [QSA,NC,L]

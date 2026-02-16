@@ -46,6 +46,16 @@ abstract class Rest {
         /* Récupère la méthode associée à la requête */
         $this->method = $_SERVER['REQUEST_METHOD'];
 
+        /* Gestion du preflight CORS pour les requêtes OPTIONS */
+        if ($this->method == 'OPTIONS') {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization');
+            header('Access-Control-Max-Age: 3600');
+            http_response_code(200);
+            exit();
+        }
+
         /* Détermine le type de contenu demandé */
        $this->content_type = "application/json";
      /* Les deux lignes suivantes enlevées à cause d'un message
@@ -90,7 +100,9 @@ abstract class Rest {
         header("HTTP/1.1 " . $status . " " . $this->getStatusMessage($status));
         header("Content-Type:" . $this->content_type);
         header('Access-Control-Allow-Origin: *');
-        header ( "Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS" );
+        header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        header("Access-Control-Max-Age: 3600");
         echo $data;
         exit;
     }

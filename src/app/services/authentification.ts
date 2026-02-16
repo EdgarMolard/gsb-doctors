@@ -41,9 +41,9 @@ export class AuthentificationService {
     return this.http.get<any>(`${this.API_URL}${environment.endpoints.connexion}`, { params })
       .pipe(
         tap(response => {
-          // L'API retourne: {"id":"a131","nom":"Aribi","prenom":"Alain",...}
+          // L'API retourne: {"id":"a131","nom":"Aribi","prenom":"Alain","token":"jwt_token_here",...}
           const sessionData: LoginResponse = {
-            token: response.id,  // Utilise l'id comme token
+            token: response.token,  // Utilise le token JWT retourné par l'API
             user: {
               id: response.id,
               nom: response.nom,
@@ -118,7 +118,6 @@ export class AuthentificationService {
       }
     }
 
-    console.error('Erreur d\'authentification:', errorMessage);
     return throwError(() => new Error(errorMessage));
   }
 }

@@ -4,11 +4,10 @@ FROM php:8.3-apache
 # Install PDO MySQL extension
 RUN docker-php-ext-install pdo pdo_mysql
 
-# Enable Apache mod_rewrite for .htaccess
+# Enable Apache modules needed for the API
 RUN a2enmod rewrite
-
-# Enable Apache headers module for CORS
 RUN a2enmod headers
+RUN a2enmod setenvif
 
 # Copy Apache configuration for CORS
 COPY apache-cors.conf /etc/apache2/conf-available/cors.conf

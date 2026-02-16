@@ -41,6 +41,9 @@ services:
       DB_USER: ${DB_USER:-gsb_user}
       DB_PASSWORD: ${DB_PASSWORD:-gsb_password}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4200}
+      # JWT Configuration
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-CHANGE_THIS_SECRET_KEY_IN_PRODUCTION}
+      JWT_TOKEN_VALIDITY: ${JWT_TOKEN_VALIDITY:-86400}
       # Activer les erreurs PHP pour debug (désactiver en production)
       PHP_DISPLAY_ERRORS: ${PHP_DISPLAY_ERRORS:-1}
       PHP_ERROR_REPORTING: ${PHP_ERROR_REPORTING:-E_ALL}
@@ -52,7 +55,7 @@ services:
       # Mount le code source pour le développement (commenter en production)
       - ./restGSB:/var/www/html
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/medecins"]
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3

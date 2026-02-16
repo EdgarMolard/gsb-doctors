@@ -37,7 +37,10 @@ export class LoginPage {
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate(['/medecins']);
+        // Attendre un tick pour s'assurer que le token est bien stocké
+        setTimeout(() => {
+          this.router.navigate(['/medecins']);
+        }, 0);
       },
       error: (error) => {
         this.isLoading = false;

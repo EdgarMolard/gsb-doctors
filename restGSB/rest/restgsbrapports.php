@@ -2,6 +2,7 @@
 
 require_once("rest.php");
 require_once("pdogsbrapports.php");
+require_once("auth.php");
 
 /**
 * @class RestGSB
@@ -108,6 +109,19 @@ class RestGSB extends Rest {
         foreach ($this->request as $k => $v) {
             if ($k != 'ressource' && $k != 'endpoint')
                 $args[$k] = $v;
+        }
+
+        // Vérification de l'authentification pour tous les endpoints sauf 'connexion', 'health' et 'debug'
+        if ($this->request['endpoint'] !== 'connexion' && $this->request['endpoint'] !== 'health' && $this->request['endpoint'] !== 'debug') {
+            $token = Auth::getBearerToken();
+            $userData = Auth::verifyToken($token);
+            
+            if (!$userData) {
+                $this->response(json_encode(['error' => 'Non autorisé. Token invalide ou absent.']), 401); // Unauthorized
+            }
+            
+            // Stocke les données de l'utilisateur pour utilisation dans les méthodes
+            $args['authenticated_user'] = $userData;
         }
     
      
@@ -225,6 +239,33 @@ class RestGSB extends Rest {
                     }
                 }
                 break;
+            case 'health':
+                // Endpoint de santé pour Docker healthcheck
+                // Retourne simplement un status OK sans authentification
+                if ( isset($args['id']) ) {
+                    $this->response("", 400); // Bad Request
+                }
+                else {
+                    if ($this->method == 'GET') {
+                        $this->request['fonction'] = "health";
+                    } else {
+                        $this->response("", 400); // Bad Request
+                    }
+                }
+                break;
+            case 'debug':
+                // Endpoint de debug pour vérifier les headers (À RETIRER EN PRODUCTION)
+                if ( isset($args['id']) ) {
+                    $this->response("", 400); // Bad Request
+                }
+                else {
+                    if ($this->method == 'GET') {
+                        $this->request['fonction'] = "debug";
+                    } else {
+                        $this->response("", 400); // Bad Request
+                    }
+                }
+                break;
                 case 'majmedecin':
 //// ce service s'appellera à partir d'une URI de la forme :
 //     ../restGSB/majmedecin?id=12&adresse=ville&tel=1234567891&specialite=psy
@@ -308,20 +349,56 @@ class RestGSB extends Rest {
         $this->response($this->data, $this->codeRetour);
     }
     
+    private function health($args) {
+        // Endpoint simple pour le healthcheck Docker
+        $this->data = json_encode([
+            'status' => 'ok',
+            'service' => 'GSB API',
+            'timestamp' => date('Y-m-d H:i:s')
+        ]);
+    }
+    
+    private function debug($args) {
+        // Endpoint de debug pour vérifier les headers reçus (À RETIRER EN PRODUCTION)
+        $debugInfo = [
+            'message' => 'Debug info - Headers and environment',
+            'authorization_methods' => [
+                'SERVER_Authorization' => $_SERVER['Authorization'] ?? 'NOT SET',
+                'SERVER_HTTP_AUTHORIZATION' => $_SERVER['HTTP_AUTHORIZATION'] ?? 'NOT SET',
+                'SERVER_REDIRECT_HTTP_AUTHORIZATION' => $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? 'NOT SET',
+                'getenv_HTTP_AUTHORIZATION' => getenv('HTTP_AUTHORIZATION') ?: 'NOT SET',
+                'Auth_getBearerToken' => Auth::getBearerToken() ?? 'NOT SET',
+            ],
+            'all_http_headers' => function_exists('apache_request_headers') ? apache_request_headers() : 'apache_request_headers NOT AVAILABLE',
+            'server_keys_with_http' => array_filter(
+                array_keys($_SERVER),
+                function($key) { return strpos($key, 'HTTP_') === 0 || strpos($key, 'AUTH') !== false; }
+            )
+        ];
+        $this->data = json_encode($debugInfo, JSON_PRETTY_PRINT);
+    }
+    
     private function connexion($args){
         $login = $args['login'];
         $mdp = $args['mdp'];
         $laLigne = $this->pdo->getLeVisiteur($login, $mdp);
          if(is_array($laLigne)){
-                     $this->data = $this->encoderReponse( $laLigne);
+             // Génère un token JWT pour l'utilisateur
+             $token = Auth::generateToken([
+                 'id' => $laLigne['id'],
+                 'login' => $laLigne['login'],
+                 'nom' => $laLigne['nom'] ?? '',
+                 'prenom' => $laLigne['prenom'] ?? ''
+             ]);
+             
+             // Ajoute le token à la réponse
+             $laLigne['token'] = $token;
+             $this->data = $this->encoderReponse($laLigne);
          }
          else{
-             $this->data="";
+             $this->data = json_encode(['error' => 'Identifiants incorrects']);
              $this->codeRetour=401;  // Unauthorized - identifiants incorrects
          }
-
-
-      
     }
     private function getLesMedecins($args){
         $nom = $args['nom'];

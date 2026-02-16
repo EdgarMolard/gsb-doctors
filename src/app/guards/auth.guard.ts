@@ -14,7 +14,6 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  console.log('Accès refusé - Redirection vers /login');
   return router.createUrlTree(['/login'], {
     queryParams: { returnUrl: state.url }
   });

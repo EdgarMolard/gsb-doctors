@@ -1,208 +1,90 @@
 # 🏥 GSB-DOCTORS
 
-Application de gestion des médecins pour GSB (Gestion Service des Bénéfices). Stack complète Angular 20 + API PHP 8.3 + MariaDB, entièrement containerisée avec Docker.
+Application de gestion des médecins pour GSB. Stack Angular 20 + API PHP 8.3 + MariaDB avec Docker.
 
-## 🚀 Démarrage rapide
+## 🚀 Démarrage
 
 ### Prérequis
 
-- **Docker** 24+ et **Docker Compose** 2+ ([Installer Docker](https://docs.docker.com/get-docker/))
-- 💻 **Windows** : Assurez-vous que Docker Desktop est lancé pour que le Docker Engine soit actif
-- Ou pour développement local : **Node.js 18+**, **PHP 8.3**, **MySQL/MariaDB**
+- **Docker** et **Docker Compose** ([Installer Docker](https://docs.docker.com/get-docker/))
 
-### Lancer avec Docker (recommandé)
+### Lancer l'application
 
 ```bash
 # 1. Configurer l'environnement
 cp .env.example .env
 
-# 2. Démarrer tous les services
+# 2. Démarrer l'application
 docker compose up -d --build
 
 # 3. Accéder à l'application
 # Frontend: http://localhost:4200
 # API:      http://localhost:3000
-# Database: localhost:3306
-```
-
-### Développement local (sans Docker)
-
-```bash
-# Frontend
-npm install
-npm start  # → http://localhost:4200
-
-# API + Database
-# Utiliser XAMPP/WAMP ou configurer Apache + PHP + MySQL
-# Importer gsbrapports.sql dans votre base de données
 ```
 
 ## 🏗️ Architecture
 
 ```
-┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-│   Frontend   │─────▶│      API     │─────▶│   Database   │
-│   Angular    │ HTTP │   PHP 8.3    │ MySQL│   MariaDB    │
-│   Port 4200  │◀─────│   Port 3000  │◀─────│   Port 3306  │
-└──────────────┘      └──────────────┘      └──────────────┘
+Frontend (Angular:4200) → API (PHP:3000) → Database (MariaDB:3306)
 ```
 
-- **Frontend**: Angular 20 + Nginx
-- **Backend**: PHP 8.3 + Apache + PDO
-- **Database**: MariaDB 10.11 (initialisée avec `gsbrapports.sql`)
-
-## ⚙️ Configuration
-
-Toutes les variables sont dans `.env` :
+## ⚙️ Configuration (.env)
 
 ```env
 # Ports
 FRONTEND_PORT=4200
 API_PORT=3000
-DB_PORT=3306
 
 # Base de données
 DB_NAME=gsbrapports
 DB_USER=gsb_user
 DB_PASSWORD=gsb_password
-DB_ROOT_PASSWORD=gsb_root_2026
 
 # CORS
 CORS_ORIGIN=http://localhost:4200
+
+# JWT (⚠️ CHANGER EN PRODUCTION)
+JWT_SECRET_KEY=CHANGE_THIS_SECRET_KEY_IN_PRODUCTION
+JWT_TOKEN_VALIDITY=86400
 ```
 
-**Note :** L'URL de l'API est configurée dans [src/environments/environment.ts](src/environments/environment.ts#L31). Modifiez-la directement dans ce fichier si nécessaire.
+**⚠️ Production :** Générez une clé JWT forte : `openssl rand -base64 32`
 
-## 🐳 Commandes Docker
+## 🐳 Commandes
 
 ```bash
-# Démarrer tous les services
+# Démarrer
 docker compose up -d
 
-# Démarrer avec rebuild des images
-docker compose up -d --build
-
-# Voir les logs (tous les services)
-docker compose logs -f
-
-# Voir les logs d'un service spécifique
-docker compose logs -f api
-docker compose logs -f frontend
-docker compose logs -f db
-
-# Vérifier le statut des conteneurs
-docker compose ps
-
-# Redémarrer les services
-docker compose restart
-
-# Redémarrer un service spécifique
-docker compose restart api
-
-# Arrêter tous les services
+# Arrêter
 docker compose down
 
-# Arrêter et supprimer les volumes (⚠️ perte des données)
-docker compose down -v
+# Voir les logs
+docker compose logs -f
 
-# Nettoyer complètement (images + volumes)
-docker compose down -v --rmi all
-```
-
-## 🧪 Tests et validation
-
-```bash
-# Vérifier que les 3 conteneurs sont UP
+# Vérifier le statut
 docker compose ps
 
-# Tester l'API
-curl http://localhost:3000/
-
-# Se connecter à la base de données
-docker compose exec db mysql -u gsb_user -pgsb_password gsbrapports
-
-# Voir les logs d'un service
-docker compose logs -f api
+# Redémarrer
+docker compose restart
 ```
+
+## 🔐 Connexion
+
+**Compte de test :**
+- Login : `aribiA`
+- Mot de passe : `aaaa`
+
+L'application utilise des **JWT tokens** stockés dans `sessionStorage`.
 
 ## 🐛 Dépannage
 
 | Problème | Solution |
 |----------|----------|
-| Port déjà utilisé / Port manquant dans `docker compose ps` | Si un service ne dispose pas de port assigné lors du `docker compose ps`, cela signifie que le port est déjà utilisé par un autre processus. Modifiez `*_PORT` dans `.env` et `apiUrl` dans `src/environments/environment.ts` pour utiliser les nouveaux ports |
-| API ne démarre pas | Attendre que `db` soit healthy: `docker compose ps` |
-| CORS bloqué | Vérifier que `CORS_ORIGIN` correspond au frontend |
-| DB non initialisée | `docker compose down -v` puis redémarrer |
-
-## 📁 Structure du projet
-
-```
-├── src/                          # Application Angular
-│   ├── app/
-│   │   ├── pages/               # Pages (login, doctors)
-│   │   ├── components/          # Composants réutilisables
-│   │   ├── services/            # Services (API, auth)
-│   │   ├── guards/              # Guards de navigation
-│   │   └── interceptors/        # Intercepteurs HTTP
-│   └── environments/            # Configuration environnement
-├── restGSB/                     # API PHP REST
-│   ├── rest/                    # Classes PDO et REST
-│   ├── config.php               # Configuration DB (credentials)
-│   └── Dockerfile               # Image PHP 8.3 + Apache
-├── docker-compose.yml           # Orchestration 3 services
-├── Dockerfile                   # Image Angular + Nginx
-├── gsbrapports.sql             # Schéma et données de la base
-└── .env                        # Configuration (ports, credentials)
-```
-
-## 🔐 Authentification
-
-L'API utilise une authentification simple par login/mot de passe (GET). Pour tester, consultez la table `visiteur` dans `gsbrapports.sql`.
-
-## 🚢 Production
-
-Avant de déployer :
-
-1. **Désactiver le volume de développement** dans `docker-compose.yml` :
-   ```yaml
-   # volumes:
-   #   - ./restGSB:/var/www/html
-   ```
-
-2. **Sécuriser les credentials** dans `.env` :
-   - Mots de passe forts pour DB
-   - Mettre `PHP_DISPLAY_ERRORS=0`
-
-3. **Configurer HTTPS** avec reverse proxy (Nginx/Traefik)
-
-4. **Mettre à jour** `CORS_ORIGIN` et `API_URL` avec votre domaine
-
-## 📝 Développement Angular
-
-```bash
-# Générer un composant
-ng generate component nom-composant
-
-# Générer un service
-ng generate service nom-service
-
-# Lancer les tests
-ng test
-
-# Build de production
-ng build
-```
-
-## 💾 Sauvegarde de la base
-
-```bash
-# Backup
-docker compose exec db mysqldump -u root -pgsb_root_2026 gsbrapports > backup.sql
-
-# Restore
-docker compose exec -T db mysql -u root -pgsb_root_2026 gsbrapports < backup.sql
-```
+| Port déjà utilisé | Modifier `*_PORT` dans `.env` |
+| API ne démarre pas | Attendre que DB soit healthy : `docker compose ps` |
+| CORS bloqué | Vérifier `CORS_ORIGIN` dans `.env` |
 
 ---
 
-**Développé avec Angular 20.3 • PHP 8.3 • MariaDB 10.11**
+**Angular 20 • PHP 8.3 • MariaDB 10.11**
