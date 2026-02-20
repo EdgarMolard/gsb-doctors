@@ -5,7 +5,8 @@
     
     <div class="nav-actions">
       <button class="add-btn" (click)="ouvrirModalAjout()" title="Nouveau rapport">
-        ➕ Nouveau rapport
+        <lucide-icon [img]="PlusIcon" [size]="20"></lucide-icon>
+        Nouveau rapport
       </button>
       
       <button class="home-btn" (click)="goHome()" title="Accueil">
@@ -50,10 +51,12 @@
             
             <div class="rapport-actions">
               <button class="edit-btn" (click)="ouvrirModalModification(rapport)" title="Modifier">
-                ✏️ Modifier
+                <lucide-icon [img]="PencilIcon" [size]="18"></lucide-icon>
+                Modifier
               </button>
               <button class="delete-btn" (click)="supprimerRapport(rapport)" title="Supprimer">
-                🗑️ Supprimer
+                <lucide-icon [img]="Trash2Icon" [size]="18"></lucide-icon>
+                Supprimer
               </button>
             </div>
           </div>
@@ -68,7 +71,9 @@
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h2>Nouveau Rapport</h2>
-          <button class="close-btn" (click)="fermerModalAjout()">✖</button>
+          <button class="close-btn" (click)="fermerModalAjout()">
+            <lucide-icon [img]="XIcon" [size]="24"></lucide-icon>
+          </button>
         </div>
         
         <div class="modal-body">
@@ -141,7 +146,9 @@
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h2>Modifier le Rapport</h2>
-          <button class="close-btn" (click)="fermerModalModification()">✖</button>
+          <button class="close-btn" (click)="fermerModalModification()">
+            <lucide-icon [img]="XIcon" [size]="24"></lucide-icon>
+          </button>
         </div>
         
         <div class="modal-body">

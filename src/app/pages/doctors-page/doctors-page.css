@@ -50,7 +50,7 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
-    background-color: lightgray;
+    background: linear-gradient(135deg, #ffffff, #f0f0f0);
   }
   
   @media (max-width: 1200px) {

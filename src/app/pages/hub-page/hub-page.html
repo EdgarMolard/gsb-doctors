@@ -7,7 +7,7 @@
         <p class="subtitle">Sélectionnez une ressource pour continuer</p>
       </div>
       <button class="logout-btn" (click)="logout()" title="Déconnexion">
-        <span class="logout-icon">🚪</span>
+        <lucide-icon [img]="LogOutIcon" [size]="20"></lucide-icon>
         <span class="logout-text">Déconnexion</span>
       </button>
     </div>
@@ -22,11 +22,24 @@
       [style.border-color]="resource.color"
     >
       <div class="card-icon" [style.background-color]="resource.color + '20'">
-        <span class="icon">{{ resource.icon }}</span>
+        <lucide-icon 
+          *ngIf="resource.icon === 'stethoscope'" 
+          [img]="StethoscopeIcon" 
+          [size]="48"
+          [color]="resource.color"
+        ></lucide-icon>
+        <lucide-icon 
+          *ngIf="resource.icon === 'clipboard-list'" 
+          [img]="ClipboardListIcon" 
+          [size]="48"
+          [color]="resource.color"
+        ></lucide-icon>
       </div>
       <h2 class="card-title">{{ resource.title }}</h2>
       <p class="card-description">{{ resource.description }}</p>
-      <div class="card-arrow" [style.color]="resource.color">→</div>
+      <div class="card-arrow" [style.color]="resource.color">
+        <lucide-icon [img]="ArrowRightIcon" [size]="24"></lucide-icon>
+      </div>
     </div>
   </main>
 </div>

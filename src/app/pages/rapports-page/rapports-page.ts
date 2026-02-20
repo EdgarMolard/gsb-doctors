@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { RapportsService } from '../../services/rapports.service';
 import { AuthentificationService } from '../../services/authentification';
 import { Rapport, RapportCreate, RapportUpdate } from '../../types/rapport.interface';
+import { LucideAngularModule, Plus, Pencil, Trash2, X } from 'lucide-angular';
 
 /**
  * Page de gestion des rapports du visiteur connecté
@@ -13,7 +14,7 @@ import { Rapport, RapportCreate, RapportUpdate } from '../../types/rapport.inter
 @Component({
   selector: 'app-rapports-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './rapports-page.html',
   styleUrls: ['./rapports-page.css']
 })
@@ -21,6 +22,12 @@ export class RapportsPageComponent implements OnInit {
   private rapportsService = inject(RapportsService);
   private authService = inject(AuthentificationService);
   private router = inject(Router);
+
+  // Icônes lucide
+  readonly PlusIcon = Plus;
+  readonly PencilIcon = Pencil;
+  readonly Trash2Icon = Trash2;
+  readonly XIcon = X;
 
   // Données
   rapports = signal<Rapport[]>([]);
