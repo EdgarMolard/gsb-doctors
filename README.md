@@ -75,10 +75,6 @@ docker compose restart
 - Login : `aribiA`
 - Mot de passe : `aaaa`
 
-**Navigation :**
-1. Connexion → `/hub` (tableau de bord)
-2. Hub → `/doctors` (liste des médecins)
-
 L'application utilise des **JWT tokens** stockés dans `sessionStorage`.
 
 ## 🐛 Dépannage

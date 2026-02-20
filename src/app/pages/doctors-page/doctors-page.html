@@ -10,6 +10,14 @@
 
 <section class="doctors-grid">
     @for(doctor of filterDoctors(); track doctor.id){
-    <app-doctor-card [doctor]="doctor"></app-doctor-card>
+    <app-doctor-card [doctor]="doctor" (editClicked)="onEditDoctor($event)"></app-doctor-card>
     }
 </section>
+
+@if (selectedDoctor()) {
+  <app-edit-doctor-modal 
+    [doctor]="selectedDoctor()!" 
+    (saved)="onDoctorSaved($event)"
+    (cancelled)="onModalCancelled()"
+  ></app-edit-doctor-modal>
+}

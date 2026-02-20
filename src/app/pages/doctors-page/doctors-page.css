@@ -34,6 +34,7 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
+    background-color: lightgray;
   }
   
   @media (max-width: 1200px) {

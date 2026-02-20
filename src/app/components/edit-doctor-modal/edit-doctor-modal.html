@@ -1,0 +1,82 @@
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal-content">
+    <header class="modal-header">
+      <h2 class="modal-title">Modifier le docteur</h2>
+    </header>
+
+    <form (ngSubmit)="onSubmit()" #editForm="ngForm">
+      <div class="modal-body">
+        <!-- Champs en lecture seule -->
+        <div class="form-group form-group--readonly">
+          <label class="form-label">Nom complet</label>
+          <input 
+            type="text" 
+            class="form-input form-input--readonly" 
+            [value]="doctor().first_name + ' ' + doctor().last_name"
+            readonly
+            disabled
+          />
+        </div>
+
+        <!-- Champs éditables -->
+        <div class="form-group">
+          <label for="specialite" class="form-label">Spécialité</label>
+          <input 
+            type="text" 
+            id="specialite"
+            name="specialite"
+            class="form-input" 
+            [(ngModel)]="specialite"
+            [value]="specialite()"
+            (input)="specialite.set($any($event.target).value)"
+            [disabled]="isLoading()"
+            placeholder="Ex: Cardiologue"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="adresse" class="form-label">Adresse</label>
+          <textarea 
+            id="adresse"
+            name="adresse"
+            class="form-input form-textarea" 
+            [(ngModel)]="adresse"
+            [value]="adresse()"
+            (input)="adresse.set($any($event.target).value)"
+            [disabled]="isLoading()"
+            rows="3"
+            placeholder="Adresse complète du cabinet"
+          ></textarea>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="error-message">
+            {{ errorMessage() }}
+          </div>
+        }
+      </div>
+
+      <footer class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn--secondary" 
+          (click)="onCancel()"
+          [disabled]="isLoading()"
+        >
+          Annuler
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn--primary" 
+          [disabled]="isLoading()"
+        >
+          @if (isLoading()) {
+            <span>Enregistrement...</span>
+          } @else {
+            <span>Enregistrer</span>
+          }
+        </button>
+      </footer>
+    </form>
+  </div>
+</div>

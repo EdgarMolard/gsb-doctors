@@ -1,16 +1,17 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DoctorsService } from '../../services/doctors.service';
 import { AuthentificationService } from '../../services/authentification';
 import { Doctor } from '../../types/doctor.interface';
 import { DoctorCard } from '../../components/doctor-card/doctor-card';
+import { EditDoctorModal } from '../../components/edit-doctor-modal/edit-doctor-modal';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-doctors-page',  
   standalone: true,  
-  imports: [CommonModule,DoctorCard,FormsModule],  
+  imports: [CommonModule, DoctorCard, EditDoctorModal, FormsModule],  
   templateUrl: './doctors-page.html',
   styleUrls: ['./doctors-page.css']
 })
@@ -24,6 +25,10 @@ export class DoctorsPageComponent implements OnInit {
   
   // Utiliser un signal mutable qu'on peut mettre à jour
   private doctorsSignal = signal<Doctor[]>([]);
+  
+  // Signal pour gérer le modal d'édition
+  selectedDoctor = signal<Doctor | null>(null);
+  isModalOpen = computed(() => this.selectedDoctor() !== null);
   
   // Exposer le signal comme fonction pour la compatibilité avec le template
   doctors = () => this.doctorsSignal();
@@ -63,6 +68,40 @@ export class DoctorsPageComponent implements OnInit {
   /** Déconnecte l'utilisateur */
   logout(): void {
     this.authService.logout();
+  }
+
+  /** Ouvre le modal d'édition pour un docteur */
+  onEditDoctor(doctor: Doctor): void {
+    this.selectedDoctor.set(doctor);
+  }
+
+  /** Ferme le modal d'édition */
+  onModalCancelled(): void {
+    this.selectedDoctor.set(null);
+  }
+
+  /** Sauvegarde les modifications du docteur */
+  onDoctorSaved(data: { id: number; adresse: string; specialite: string }): void {
+    this.doctorsService.updateDoctor(data.id, data.adresse, data.specialite).subscribe({
+      next: () => {
+        // Rafraîchir la liste des docteurs
+        this.doctorsService.getDoctors().subscribe({
+          next: (doctors) => {
+            this.doctorsSignal.set(doctors);
+            this.selectedDoctor.set(null); // Fermer le modal
+          },
+          error: (error) => {
+            console.error('Erreur lors du rafraîchissement de la liste', error);
+            this.selectedDoctor.set(null);
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors de la mise à jour', error);
+        // Le modal reste ouvert pour que l'utilisateur puisse réessayer
+        // Note: il faudrait idéalement afficher un message d'erreur dans le modal
+      }
+    });
   }
 
 }

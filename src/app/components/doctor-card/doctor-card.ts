@@ -1,4 +1,4 @@
-import { Component, Input, Signal, input } from '@angular/core';
+import { Component, Input, Signal, input, output } from '@angular/core';
 import { Doctor } from '../../types/doctor.interface';
 
 
@@ -10,4 +10,9 @@ import { Doctor } from '../../types/doctor.interface';
 })
 export class DoctorCard {
    doctor = input.required<Doctor>();
+   editClicked = output<Doctor>();
+
+   onEditClick() {
+     this.editClicked.emit(this.doctor());
+   }
 }

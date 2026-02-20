@@ -17,4 +17,12 @@ export class DoctorsService {
 		      map((medecins) => medecins.map(convertMedecinToDoctor))
       );  
   }
+
+  updateDoctor(id: number, adresse: string, specialite: string): Observable<any> {
+    return this.httpClient.put(`${this.API_URL}medecin/${id}`, {
+      adresse,
+      specialite,
+      tel: '' // Backend nécessite ce champ mais on ne le gère pas côté frontend
+    });
+  }
 }
