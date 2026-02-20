@@ -81,7 +81,13 @@ abstract class Rest {
               //   error_log(print_r( $this->request,true),3,"log.txt");
                  break;
             case "PUT" :
-                 $this->request = $this->cleanInputs($_GET);
+                 // Lire le corps JSON de la requête PUT
+                 $putData = json_decode(file_get_contents('php://input'), true);
+                 if ($putData === null) {
+                     $putData = array();
+                 }
+                 // Fusionner avec les paramètres GET (pour l'ID dans l'URL)
+                 $this->request = array_merge($this->cleanInputs($_GET), $this->cleanInputs($putData));
                 break;
             default :
                 $this->response('Methode non autorisée', 405);   // Method Not Allowed

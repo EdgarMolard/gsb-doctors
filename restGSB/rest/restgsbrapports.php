@@ -426,7 +426,7 @@ class RestGSB extends Rest {
         $this->data = $this->encoderReponse( $lesLignes);
     } 
     private function majMedecin($args){
-        $idmedecin = $args['idmedecin'];
+        $idmedecin = $args['id'];
         $adresse = $args['adresse'];
         $tel = $args['tel'];
         $specialite = $args['specialite'];
