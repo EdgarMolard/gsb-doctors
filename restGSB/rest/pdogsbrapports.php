@@ -98,7 +98,21 @@ class PdoGsbRapports{
                 $laLigne = $stm->fetch();
                 return $laLigne;
          }
-        public function majRapport($idRapport,$motif,$bilan){
+        public function majRapport($idRapport,$motif,$bilan,$idVisiteur = null){
+                 // Si un idVisiteur est fourni, vérifie d'abord que le rapport lui appartient
+                 if($idVisiteur !== null){
+                     $req = "select id from rapport where id = :idRapport and idVisiteur = :idVisiteur";
+                     $stm = self::$monPdo->prepare($req);
+                     $stm->bindParam(':idRapport', $idRapport);
+                     $stm->bindParam(':idVisiteur', $idVisiteur);
+                     $stm->execute();
+                     $laLigne = $stm->fetch();
+                     
+                     if($laLigne === false){
+                         return false; // Le rapport n'appartient pas au visiteur
+                     }
+                 }
+                 
                  $req = "update rapport set bilan = :bilan ,motif = :motif where id = :idRapport";
                   $stm = self::$monPdo->prepare($req);
                   $stm->bindParam(':idRapport', $idRapport);
@@ -147,6 +161,45 @@ class PdoGsbRapports{
             $stm->execute();
             $lesLignes = $stm->fetchall();
             return $lesLignes;
+        }
+        
+        public function getLesRapportsVisiteur($idVisiteur){
+            $req = "select rapport.id as idRapport, rapport.motif as motif, rapport.date as date, ";
+            $req .= "rapport.bilan as bilan, medecin.nom as nomMedecin, medecin.prenom as prenomMedecin, ";
+            $req .= "medecin.id as idMedecin from rapport, medecin ";
+            $req .= "where rapport.idMedecin = medecin.id ";
+            $req .= "and rapport.idVisiteur = :idVisiteur order by date DESC";
+            $stm = self::$monPdo->prepare($req);
+            $stm->bindParam(':idVisiteur', $idVisiteur); 
+            $stm->execute();
+            $lesLignes = $stm->fetchall();
+            return $lesLignes;
+        }
+        
+        public function supprimerRapport($idRapport, $idVisiteur){
+            // Vérifie d'abord que le rapport appartient bien au visiteur
+            $req = "select id from rapport where id = :idRapport and idVisiteur = :idVisiteur";
+            $stm = self::$monPdo->prepare($req);
+            $stm->bindParam(':idRapport', $idRapport);
+            $stm->bindParam(':idVisiteur', $idVisiteur);
+            $stm->execute();
+            $laLigne = $stm->fetch();
+            
+            if($laLigne === false){
+                return false; // Le rapport n'appartient pas au visiteur
+            }
+            
+            // Supprime d'abord les médicaments associés
+            $req = "delete from offrir where idRapport = :idRapport";
+            $stm = self::$monPdo->prepare($req);
+            $stm->bindParam(':idRapport', $idRapport);
+            $stm->execute();
+            
+            // Supprime ensuite le rapport
+            $req = "delete from rapport where id = :idRapport";
+            $stm = self::$monPdo->prepare($req);
+            $stm->bindParam(':idRapport', $idRapport);
+            return $stm->execute();
         }
         public function getLesMedicaments($nom){
             

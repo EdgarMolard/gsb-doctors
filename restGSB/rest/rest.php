@@ -74,7 +74,8 @@ abstract class Rest {
         //      error_log(print_r( $this->request,true),3,"log.txt");
              break;
             case "DELETE" :
-                $this->request = $this->cleanInputs($_POST);
+                // Pour DELETE, l'ID est dans l'URL donc on utilise $_GET
+                $this->request = $this->cleanInputs($_GET);
                 break;
             case "GET" :
                  $this->request = $this->cleanInputs($_GET);

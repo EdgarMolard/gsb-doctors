@@ -26,6 +26,13 @@ export class HubPageComponent {
       icon: '👨‍⚕️',
       route: '/doctors',
       color: '#4A90E2'
+    },
+    {
+      title: 'Rapports',
+      description: 'Gérer mes rapports de visite',
+      icon: '📋',
+      route: '/rapports',
+      color: '#28a745'
     }
     // Futures ressources à ajouter ici
   ];

@@ -162,17 +162,17 @@ class RestGSB extends Rest {
                     }
                 }
                 break;
-     // ce service s'appellera à partir d'une URI de la forme .../restGSB/rapport/789
-     // où 789 est l'id du rapport
             case "rapport" :
                 if ( !isset($args['id']) ) {  // l'id de la ressource DOIT être renseigné
                     $this->response("", 400); // Bad Request
                 }
-                else {  // Seules les méthodes GET et PUT sont autorisées
+                else {  // Seules les méthodes GET, PUT et DELETE sont autorisées
                     if ($this->method == 'GET') {
                         $this->request['fonction'] = "getLeRapport";
                     } else if ($this->method == 'PUT') {
                         $this->request['fonction'] = "majRapport";
+                    } else if ($this->method == 'DELETE') {
+                        $this->request['fonction'] = "supprimerRapport";
                     } else {
                         $this->response("", 400); // Bad Request
                     }
@@ -187,6 +187,21 @@ class RestGSB extends Rest {
                 else {  // Seules la méthode GET est autorisée
                     if ($this->method == 'GET') {
                         $this->request['fonction'] = "getLesRapports";
+                    } 
+                    else {
+                        $this->response("", 400); // Bad Request
+                    }
+                }
+                break;
+         // ce service s'appellera à partir d'une URI de la forme .../restGSB/rapportsvisiteur
+         // et récupère les rapports du visiteur authentifié
+            case "rapportsvisiteur" :
+                if ( isset($args['id']) ) {  // l'id de la ressource ne DOIT PAS être renseigné
+                    $this->response("", 400); // Bad Request
+                }
+                else {  // Seules la méthode GET est autorisée
+                    if ($this->method == 'GET') {
+                        $this->request['fonction'] = "getLesRapportsVisiteur";
                     } 
                     else {
                         $this->response("", 400); // Bad Request
@@ -314,14 +329,12 @@ class RestGSB extends Rest {
                 }
                 break;
                 case  'nouveaurapport':
-                         if ( isset($args['id']) ) {  // l'id de la ressource ne DOIT être renseigné
+                         if ( isset($args['id']) ) {  // l'id de la ressource ne DOIT PAS être renseigné
                             $this->response("", 400); // Bad Request
                         }
-                        else {  // Seules la méthode GET est autorisée
-                             if ($this->method == 'GET') {
+                        else {  // Les méthodes GET et POST sont autorisées
+                             if ($this->method == 'GET' || $this->method == 'POST') {
                                  $this->request['fonction'] = "nouveauRapport";
-     //                      error_log(print_r("Ok dans le bon case",true),3,"log.txt");
-                          
                              } 
                              else {
                                 $this->response("", 400); // Bad Request
@@ -425,6 +438,27 @@ class RestGSB extends Rest {
         $lesLignes = $this->pdo->getLesRapports($idMedecin);
         $this->data = $this->encoderReponse( $lesLignes);
     } 
+    
+    private function getLesRapportsVisiteur($args){
+        // Utilise l'ID du visiteur authentifié
+        $idVisiteur = $args['authenticated_user']['id'];
+        $lesLignes = $this->pdo->getLesRapportsVisiteur($idVisiteur);
+        $this->data = $this->encoderReponse( $lesLignes);
+    } 
+    
+    private function supprimerRapport($args){
+        $idRapport = $args['id'];
+        // Utilise l'ID du visiteur authentifié pour sécuriser la suppression
+        $idVisiteur = $args['authenticated_user']['id'];
+        $result = $this->pdo->supprimerRapport($idRapport, $idVisiteur);
+        
+        if($result){
+            $this->data = json_encode(['success' => true, 'message' => 'Rapport supprimé']);
+        } else {
+            $this->data = json_encode(['success' => false, 'message' => 'Rapport non trouvé ou non autorisé']);
+            $this->codeRetour = 403; // Forbidden
+        }
+    } 
     private function majMedecin($args){
         $idmedecin = $args['id'];
         $adresse = $args['adresse'];
@@ -434,11 +468,20 @@ class RestGSB extends Rest {
 
     } 
     private function majRapport($args){
-        $idRapport = $args['idRapport'];
+        $idRapport = isset($args['id']) ? $args['id'] : $args['idRapport'];
         $bilan = $args['bilan'];
         $motif = $args['motif'];
-        $this->pdo->majRapport($idRapport,$motif,$bilan);
-
+        // Utilise l'ID du visiteur authentifié pour sécuriser la modification
+        $idVisiteur = $args['authenticated_user']['id'];
+        
+        $result = $this->pdo->majRapport($idRapport, $motif, $bilan, $idVisiteur);
+        
+        if($result){
+            $this->data = json_encode(['success' => true, 'message' => 'Rapport modifié']);
+        } else {
+            $this->data = json_encode(['success' => false, 'message' => 'Rapport non trouvé ou non autorisé']);
+            $this->codeRetour = 403; // Forbidden
+        }
     } 
     private function getLesRapportsUneDate($args){
         $date = $args['date'];
@@ -452,13 +495,22 @@ class RestGSB extends Rest {
         $this->data = $this->encoderReponse( $lesLignes);
     } 
     private function nouveauRapport($args){
-        $idVisiteur =  $args['idVisiteur'];
+        // Utilise l'ID du visiteur authentifié
+        $idVisiteur = $args['authenticated_user']['id'];
         $idMedecin =  $args['idMedecin'];
         $motif =  $args['motif'];
         $bilan =  $args['bilan'];
         $date =  $args['date'];
-        $medicaments = $args['medicaments'];
-        $this->pdo->ajouterRapport($idMedecin ,$idVisiteur ,$bilan ,$motif ,$date ,$medicaments);
+        $medicaments = isset($args['medicaments']) ? $args['medicaments'] : 0;
+        
+        $result = $this->pdo->ajouterRapport($idMedecin, $idVisiteur, $bilan, $motif, $date, $medicaments);
+        
+        if($result){
+            $this->data = json_encode(['success' => true, 'message' => 'Rapport ajouté']);
+        } else {
+            $this->data = json_encode(['success' => false, 'message' => 'Erreur lors de l\'ajout']);
+            $this->codeRetour = 500; // Internal Server Error
+        }
     }
     private function encoderReponse($data) {
         if(is_array($data)){

@@ -1,0 +1,188 @@
+<div class="rapports-container">
+  <!-- Barre de navigation -->
+  <section class="nav-bar">
+    <h1>Mes Rapports</h1>
+    
+    <div class="nav-actions">
+      <button class="add-btn" (click)="ouvrirModalAjout()" title="Nouveau rapport">
+        ➕ Nouveau rapport
+      </button>
+      
+      <button class="home-btn" (click)="goHome()" title="Accueil">
+        Hub
+      </button>
+      
+      <button class="logout-btn" (click)="logout()" title="Déconnexion">
+        Déconnexion
+      </button>
+    </div>
+  </section>
+
+  <!-- Liste des rapports -->
+  <section class="rapports-list">
+    @if (rapports().length === 0) {
+      <div class="empty-state">
+        <p>Vous n'avez pas encore de rapports.</p>
+        <button class="add-btn" (click)="ouvrirModalAjout()">
+          Créer mon premier rapport
+        </button>
+      </div>
+    } @else {
+      <div class="rapports-grid">
+        @for (rapport of rapports(); track rapport.idRapport) {
+          <div class="rapport-card">
+            <div class="rapport-header">
+              <h3>Dr. {{ rapport.nomMedecin }} {{ rapport.prenomMedecin }}</h3>
+              <span class="rapport-date">{{ formatDate(rapport.date) }}</span>
+            </div>
+            
+            <div class="rapport-body">
+              <div class="rapport-field">
+                <strong>Motif :</strong>
+                <p>{{ rapport.motif }}</p>
+              </div>
+              
+              <div class="rapport-field">
+                <strong>Bilan :</strong>
+                <p>{{ rapport.bilan }}</p>
+              </div>
+            </div>
+            
+            <div class="rapport-actions">
+              <button class="edit-btn" (click)="ouvrirModalModification(rapport)" title="Modifier">
+                ✏️ Modifier
+              </button>
+              <button class="delete-btn" (click)="supprimerRapport(rapport)" title="Supprimer">
+                🗑️ Supprimer
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- Modal d'ajout -->
+  @if (showAddModal()) {
+    <div class="modal-overlay" (click)="fermerModalAjout()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Nouveau Rapport</h2>
+          <button class="close-btn" (click)="fermerModalAjout()">✖</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="searchMedecin">Médecin *</label>
+            <input 
+              id="searchMedecin"
+              type="text" 
+              [(ngModel)]="searchMedecin"
+              (input)="rechercherMedecins()"
+              placeholder="Rechercher un médecin (nom ou prénom)..."
+              class="form-control"
+            />
+            
+            @if (medecins().length > 0) {
+              <div class="medecins-dropdown">
+                @for (medecin of medecins(); track medecin.id) {
+                  <div class="medecin-item" (click)="selectionnerMedecin(medecin)">
+                    {{ medecin.nom }} {{ medecin.prenom }} - {{ medecin.specialitecomplementaire }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+          
+          <div class="form-group">
+            <label for="date">Date *</label>
+            <input 
+              id="date"
+              type="date" 
+              [(ngModel)]="nouveauRapport.date"
+              class="form-control"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label for="motif">Motif *</label>
+            <textarea 
+              id="motif"
+              [(ngModel)]="nouveauRapport.motif"
+              placeholder="Motif de la visite..."
+              rows="3"
+              class="form-control"
+            ></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="bilan">Bilan *</label>
+            <textarea 
+              id="bilan"
+              [(ngModel)]="nouveauRapport.bilan"
+              placeholder="Bilan de la visite..."
+              rows="4"
+              class="form-control"
+            ></textarea>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="cancel-btn" (click)="fermerModalAjout()">Annuler</button>
+          <button class="save-btn" (click)="ajouterRapport()">Ajouter</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal de modification -->
+  @if (showEditModal() && selectedRapport()) {
+    <div class="modal-overlay" (click)="fermerModalModification()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Modifier le Rapport</h2>
+          <button class="close-btn" (click)="fermerModalModification()">✖</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Médecin</label>
+            <p class="readonly-field">Dr. {{ selectedRapport()!.nomMedecin }} {{ selectedRapport()!.prenomMedecin }}</p>
+          </div>
+          
+          <div class="form-group">
+            <label>Date</label>
+            <p class="readonly-field">{{ formatDate(selectedRapport()!.date) }}</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="motifEdit">Motif *</label>
+            <textarea 
+              id="motifEdit"
+              [(ngModel)]="rapportModifie.motif"
+              placeholder="Motif de la visite..."
+              rows="3"
+              class="form-control"
+            ></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="bilanEdit">Bilan *</label>
+            <textarea 
+              id="bilanEdit"
+              [(ngModel)]="rapportModifie.bilan"
+              placeholder="Bilan de la visite..."
+              rows="4"
+              class="form-control"
+            ></textarea>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="cancel-btn" (click)="fermerModalModification()">Annuler</button>
+          <button class="save-btn" (click)="modifierRapport()">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

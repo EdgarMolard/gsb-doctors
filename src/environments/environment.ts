@@ -12,6 +12,9 @@ export const environment = {
   // Endpoints API
   endpoints: {
     connexion: 'connexion',  // GET /connexion?login=xxx&mdp=yyy
-    medecins: 'medecins'     // GET /medecins?nom=
+    medecins: 'medecins',    // GET /medecins?nom=
+    rapportsvisiteur: 'rapportsvisiteur',  // GET /rapportsvisiteur
+    rapport: 'rapport',      // GET/PUT/DELETE /rapport/{id}
+    nouveaurapport: 'nouveaurapport'  // POST /nouveaurapport
   }
 };
