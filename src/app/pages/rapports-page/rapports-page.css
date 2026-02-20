@@ -1,8 +1,7 @@
 .rapports-container {
   padding: 2rem;
   max-width: 1400px;
-  /*Dégradé de blanc vers gris clair*/
-  background: linear-gradient(135deg, #ffffff, #f0f0f0);
+  background: linear-gradient(135deg, #ffffff, #ada6a6);
   margin: 0 auto;
 }
 
