@@ -70,6 +70,11 @@ export class DoctorsPageComponent implements OnInit {
     this.authService.logout();
   }
 
+  /** Redirige vers la page d'accueil */
+  goHome(): void {
+    this.router.navigate(['/hub']);
+  }
+
   /** Ouvre le modal d'édition pour un docteur */
   onEditDoctor(doctor: Doctor): void {
     this.selectedDoctor.set(doctor);
