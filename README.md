@@ -79,7 +79,7 @@ JWT_SECRET_KEY=CHANGE_THIS_SECRET_KEY_IN_PRODUCTION
 JWT_TOKEN_VALIDITY=86400
 ```
 
-**⚠️ Production :** Générez une clé JWT forte : `openssl rand -base64 32`
+**⚠️ Production :** Générez une clé JWT forte : `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
 
 ## 🐳 Commandes
 
