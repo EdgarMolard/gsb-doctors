@@ -3640,7 +3640,6 @@ CREATE TABLE `visiteur` (
   `ville` char(30) DEFAULT NULL,
   `dateEmbauche` date DEFAULT NULL,
   `timespan` bigint(20) NOT NULL,
-  `ticket` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
