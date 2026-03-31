@@ -20,7 +20,8 @@ Application de gestion des médecins et rapports de visite pour GSB (Galaxy Swis
 
 ```bash
 # 1. Configurer l'environnement
-cp .env.example .env
+linux : cp .env.example .env
+windows : copy .env.example .env
 
 # 2. Démarrer l'application
 docker compose up -d --build
