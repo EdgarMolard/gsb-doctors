@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `famille` (
   `id` varchar(10) NOT NULL,
   `libelle` varchar(80) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 --
 -- Dumping data for table `famille`
