@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `famille` (
   `id` varchar(10) NOT NULL,
   `libelle` varchar(80) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `famille`
@@ -72,7 +72,7 @@ CREATE TABLE `medecin` (
   `tel` varchar(15) DEFAULT NULL,
   `specialitecomplementaire` varchar(50) DEFAULT NULL,
   `departement` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 --
 -- Dumping data for table `medecin`
@@ -1094,7 +1094,7 @@ CREATE TABLE `medicament` (
   `composition` varchar(100) NOT NULL,
   `effets` varchar(100) NOT NULL,
   `contreIndications` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 --
 -- Dumping data for table `medicament`
@@ -1140,7 +1140,7 @@ CREATE TABLE `offrir` (
   `idRapport` int(11) NOT NULL,
   `idMedicament` varchar(30) NOT NULL,
   `quantite` int(2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 --
 -- Dumping data for table `offrir`
@@ -2024,7 +2024,7 @@ CREATE TABLE `rapport` (
   `bilan` varchar(100) DEFAULT NULL,
   `idVisiteur` char(4) NOT NULL,
   `idMedecin` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 --
 -- Dumping data for table `rapport`
@@ -3640,7 +3640,7 @@ CREATE TABLE `visiteur` (
   `ville` char(30) DEFAULT NULL,
   `dateEmbauche` date DEFAULT NULL,
   `timespan` bigint(20) NOT NULL,
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 
 --
 -- Dumping data for table `visiteur`
